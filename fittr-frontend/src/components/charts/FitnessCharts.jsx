@@ -20,10 +20,29 @@ ChartJS.register(
 
 function FitnessCharts({ activities }) {
 
-  // 🔥 Use real category name from backend
-  const labels = activities.map(a => a.category?.name || "Unknown");
-  const durations = activities.map(a => a.duration || 0);
-  const calories = activities.map(a => a.calories || 0);
+  /* GROUP DATA BY CATEGORY */
+
+  const categoryMap = {};
+activities.forEach(activity => {
+  const category = activity.name || "General";
+
+    if (!categoryMap[category]) {
+      categoryMap[category] = {
+        duration: 0,
+        calories: 0
+      };
+    }
+
+    categoryMap[category].duration += activity.duration || 0;
+    categoryMap[category].calories += activity.calories || 0;
+  });
+
+  const labels = Object.keys(categoryMap);
+
+  const durations = labels.map(label => categoryMap[label].duration);
+  const calories = labels.map(label => categoryMap[label].calories);
+
+  /* BAR CHART */
 
   const barData = {
     labels,
@@ -40,6 +59,8 @@ function FitnessCharts({ activities }) {
       }
     ]
   };
+
+  /* PIE CHART */
 
   const pieData = {
     labels,
@@ -63,6 +84,7 @@ function FitnessCharts({ activities }) {
 
   return (
     <div style={{ display: "flex", gap: "40px", marginTop: "40px" }}>
+      
       <div style={{ width: "50%" }}>
         <h3>Activity Duration & Calories</h3>
         <Bar data={barData} />
@@ -72,6 +94,7 @@ function FitnessCharts({ activities }) {
         <h3>Calories Distribution</h3>
         <Pie data={pieData} />
       </div>
+
     </div>
   );
 }
