@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import axios from "axios";
 
 export default function WorkoutSession({ userId, refresh }) {
-  const [time, setTime] = useState(0); // milliseconds
+
+  const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
   const [activity, setActivity] = useState("Running");
   const [saving, setSaving] = useState(false);
@@ -12,100 +13,135 @@ export default function WorkoutSession({ userId, refresh }) {
 
   const timerRef = useRef(null);
 
-  // calories per minute
+  /* ===============================
+     CALORIES PER MINUTE
+  =============================== */
+
   const calorieRate = {
     Running: 12,
     Walking: 5,
+    Cycling: 10,
     Yoga: 4,
-    Gym: 8
+    Gym: 8,
+    HIIT: 14,
+    Swimming: 11,
+    JumpRope: 13,
+    Pushups: 9,
+    Squats: 8,
+    Plank: 6,
+    Stretching: 3
   };
 
   /* ===============================
      START TIMER
   =============================== */
+
   const start = () => {
+
     if (running) return;
+
     setRunning(true);
 
     const startTime = Date.now() - time;
+
     timerRef.current = setInterval(() => {
       setTime(Date.now() - startTime);
-    }, 100); // 100ms is enough
+    }, 100);
+
   };
 
   /* ===============================
-     STOP & SAVE (FIXED)
+     STOP & SAVE
   =============================== */
+
   const stopAndSave = async () => {
+
     clearInterval(timerRef.current);
     setRunning(false);
 
     const minutesRaw = time / 60000;
 
-    // 🚫 Ignore accidental clicks (< 30 seconds)
+    // ignore accidental clicks
     if (minutesRaw < 0.5) {
       setError(true);
-      setTimeout(() => setError(false), 600);
+      setTimeout(() => setError(false), 800);
       return;
     }
 
-    // ✅ ALWAYS save at least 1 minute
     const minutes = Math.max(1, Math.ceil(minutesRaw));
     const calories = minutes * calorieRate[activity];
 
     try {
+
       setSaving(true);
 
       await axios.post(
         `http://localhost:8080/api/activities/user/${userId}`,
         {
           name: activity,
-          duration: minutes, // ✅ STORE MINUTES (INTEGER)
-          calories,
+          duration: minutes,
+          calories: calories,
           date: new Date().toISOString().split("T")[0],
-          category: "General"
+          category: "Workout"
         }
       );
 
-      refresh();      // 🔄 refresh dashboard
-      setTime(0);     // reset timer
+      if (refresh) refresh();
+
+      // ✅ RESET TIMER AFTER SAVE
+      setTime(0);
+
       setSuccess(true);
       setTimeout(() => setSuccess(false), 1000);
 
     } catch (err) {
+
       console.error("Save failed", err);
       setError(true);
-      setTimeout(() => setError(false), 600);
+      setTimeout(() => setError(false), 800);
+
     } finally {
+
       setSaving(false);
+
     }
+
   };
 
   /* ===============================
      RESET
   =============================== */
+
   const reset = () => {
+
     clearInterval(timerRef.current);
     setRunning(false);
     setTime(0);
+
   };
 
   /* ===============================
      FORMAT TIMER
   =============================== */
-  const formatTime = ms => {
+
+  const formatTime = (ms) => {
+
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
     const milli = Math.floor((ms % 1000) / 10);
+
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milli).padStart(2, "0")}`;
+
   };
 
   return (
+
     <motion.div
       style={card}
       className={error ? "shake" : ""}
       animate={success ? { boxShadow: "0 0 40px #22c55e" } : {}}
     >
+
       <h3>🏋️ Smart Workout Tracker</h3>
 
       <motion.div
@@ -117,6 +153,7 @@ export default function WorkoutSession({ userId, refresh }) {
       </motion.div>
 
       <div style={{ marginBottom: 15 }}>
+
         <button style={btn} onClick={start}>
           Start
         </button>
@@ -128,21 +165,35 @@ export default function WorkoutSession({ userId, refresh }) {
         <button style={btn} onClick={reset}>
           Reset
         </button>
+
       </div>
 
       <motion.select
         value={activity}
-        onChange={e => setActivity(e.target.value)}
+        onChange={(e) => setActivity(e.target.value)}
         style={select}
         whileHover={{ scale: 1.05 }}
       >
+
         <option>Running</option>
         <option>Walking</option>
+        <option>Cycling</option>
         <option>Yoga</option>
         <option>Gym</option>
+        <option>HIIT</option>
+        <option>Swimming</option>
+        <option>JumpRope</option>
+        <option>Pushups</option>
+        <option>Squats</option>
+        <option>Plank</option>
+        <option>Stretching</option>
+
       </motion.select>
+
     </motion.div>
+
   );
+
 }
 
 /* ===============================
@@ -155,7 +206,7 @@ const card = {
   color: "white",
   padding: "25px",
   borderRadius: "20px",
-  maxWidth: "400px",
+  maxWidth: "420px",
   margin: "auto",
   border: "1px solid rgba(255,255,255,0.08)",
   boxShadow: "0 0 30px rgba(56,189,248,0.3)",
@@ -163,7 +214,7 @@ const card = {
 };
 
 const timerStyle = {
-  fontSize: "48px",
+  fontSize: "50px",
   fontWeight: "bold",
   margin: "20px 0",
   fontFamily: "monospace",
@@ -171,7 +222,7 @@ const timerStyle = {
 };
 
 const btn = {
-  padding: "10px 20px",
+  padding: "10px 18px",
   margin: "0 6px",
   borderRadius: "12px",
   border: "none",
@@ -191,6 +242,5 @@ const select = {
   background: "rgba(2,6,23,0.8)",
   color: "#fff"
 };
-
 
 

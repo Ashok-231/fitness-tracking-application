@@ -40,16 +40,21 @@ public class AdminController {
        👥 ADMIN USER LIST (SEARCH)
     =============================== */
 
-    // ✅ Used by AdminDashboard.jsx (search + delete)
     @GetMapping("/users")
     public List<Map<String, Object>> getAllUsers() {
-        return userRepository.findAllUserIdAndNames()
+
+        return userRepository.findAllUsersWithRole()
                 .stream()
                 .map(row -> {
+
                     Map<String, Object> user = new HashMap<>();
+
                     user.put("id", row[0]);
                     user.put("name", row[1]);
+                    user.put("role", row[2]);
+
                     return user;
+
                 })
                 .collect(Collectors.toList());
     }
@@ -64,8 +69,7 @@ public class AdminController {
     }
 
     /* ===============================
-       🧾 OPTIONAL NAME-ONLY APIs
-       (Keep ONLY if used elsewhere)
+       OPTIONAL NAME APIs
     =============================== */
 
     @GetMapping("/users/names")
@@ -83,4 +87,3 @@ public class AdminController {
         return userRepository.findAdminNames();
     }
 }
-

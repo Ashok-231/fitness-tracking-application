@@ -10,36 +10,68 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "activities")
 public class Activity {
 
+    /* ===============================
+       🔑 PRIMARY KEY
+    =============================== */
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /* ===============================
+       🏃 ACTIVITY DETAILS
+    =============================== */
+
+    // e.g. Running, Cycling, Yoga
     private String name;
+
+    // duration in seconds
     private int duration;
+
     private int calories;
 
-    // 🔥 This field was missing
+    // 🔥 ALWAYS REQUIRED
     private LocalDate date;
 
-    // ---------------- Category ----------------
+    /* ===============================
+       📂 CATEGORY
+    =============================== */
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     @JsonIgnoreProperties("activities")
     private Category category;
 
-    // ---------------- User ----------------
+    /* ===============================
+       👤 USER (MANDATORY)
+    =============================== */
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties({"activities", "goals"})
+    @JsonIgnoreProperties({ "activities", "goals" })
     private User user;
 
-    // ===== Getters & Setters =====
+    /* ===============================
+       🔄 AUTO SET DATE
+    =============================== */
+
+    @PrePersist
+    public void prePersist() {
+        if (this.date == null) {
+            this.date = LocalDate.now();
+        }
+    }
+
+    /* ===============================
+       GETTERS & SETTERS
+    =============================== */
 
     public Long getId() {
         return id;
@@ -97,6 +129,7 @@ public class Activity {
         this.user = user;
     }
 }
+
 
 
 

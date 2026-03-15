@@ -7,4 +7,5 @@ import org.svcet.fittr.entity.BodyProgress;
 
 public interface BodyProgressRepository extends JpaRepository<BodyProgress, Long> {
     List<BodyProgress> findByUserIdOrderByDateAsc(Long userId);
+    
 }

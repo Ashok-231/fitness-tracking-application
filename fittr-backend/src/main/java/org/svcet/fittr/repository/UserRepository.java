@@ -23,24 +23,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /* ===============================
        👥 ADMIN USER LIST (SEARCH + DELETE)
+       NOW RETURNS ROLE ALSO
     =============================== */
 
-    // ✅ REQUIRED for Admin Search & Delete
-    @Query("SELECT u.id, u.name FROM User u")
-    List<Object[]> findAllUserIdAndNames();
+    @Query("SELECT u.id, u.name, u.role FROM User u")
+    List<Object[]> findAllUsersWithRole();
 
     /* ===============================
        👤 OPTIONAL NAME-ONLY QUERIES
-       (Keep only if used elsewhere)
     =============================== */
 
     @Query("SELECT u.name FROM User u")
     List<String> findAllUserNames();
 
-    @Query("SELECT u.name FROM User u WHERE u.role = 'USER'")
+    @Query("SELECT u.name FROM User u WHERE u.role = 'ROLE_USER'")
     List<String> findNormalUserNames();
 
-    @Query("SELECT u.name FROM User u WHERE u.role = 'ADMIN'")
+    @Query("SELECT u.name FROM User u WHERE u.role = 'ROLE_ADMIN'")
     List<String> findAdminNames();
 
     /* ===============================

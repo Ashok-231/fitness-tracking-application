@@ -5,111 +5,150 @@ import bg from "../assets/gym-bg.png";
 import "./Auth.css";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [loading, setLoading] = useState(false);
+const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      alert("Please enter email and password");
-      return;
-    }
+const navigate = useNavigate();
 
-    try {
-      setLoading(true);
+const handleLogin = async () => {
 
-      const res = await axios.post(
-        "http://localhost:8080/api/auth/login",
-        { email, password }
-      );
 
-      const user = res.data;
+if (!email || !password) {
+  alert("Please enter email and password");
+  return;
+}
 
-      /* ===============================
-         🔐 NORMALIZE ROLE (🔥 FIX)
-      =============================== */
-      let role = user.role;
+try {
 
-      // Handle array roles
-      if (Array.isArray(role)) {
-        role = role[0];
-      }
+  setLoading(true);
 
-      // Normalize admin role
-      if (role === "ADMIN" || role === "admin") {
-        role = "ROLE_ADMIN";
-      }
+  const res = await axios.post(
+    "http://localhost:8080/api/auth/login",
+    { email, password }
+  );
 
-      /* ===============================
-         🔐 STORE AUTH DATA
-      =============================== */
-      localStorage.setItem("userId", user.userId ?? user.id);
-      localStorage.setItem("role", role);
-      localStorage.setItem("token", user.token);
-      localStorage.setItem("user", JSON.stringify(user));
+  const user = res.data;
 
-      /* ===============================
-         🔁 REDIRECT (🔥 FIX)
-      =============================== */
-      if (role === "ROLE_ADMIN") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/dashboard", { replace: true });
-      }
+  let role = user.role;
 
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("Invalid email or password");
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (Array.isArray(role)) {
+    role = role[0];
+  }
 
-  return (
-    <div
-      className="auth-container"
-      style={{ backgroundImage: `url(${bg})` }}
-    >
-      <div className="auth-card">
-        <h2>🏋 Fittr Login</h2>
+  if (role === "ADMIN" || role === "admin") {
+    role = "ROLE_ADMIN";
+  }
+
+  const userId = user.userId || user.id;
+
+  if (!userId) {
+    throw new Error("User ID not returned from backend");
+  }
+
+  /* ================= SAVE LOGIN DATA ================= */
+
+  localStorage.setItem("userId", userId);
+  localStorage.setItem("role", role);
+  localStorage.setItem("token", user.token);
+  localStorage.setItem("user", JSON.stringify(user));
+
+  /* ================= REDIRECT ================= */
+
+  if (role === "ROLE_ADMIN") {
+    navigate("/admin");
+  } else {
+    navigate("/dashboard");
+  }
+
+} catch (err) {
+
+  console.error(err);
+  alert("Invalid email or password");
+
+} finally {
+
+  setLoading(false);
+
+}
+
+
+};
+
+/* Handle form submit */
+const handleSubmit = (e) => {
+e.preventDefault();
+handleLogin();
+};
+
+return (
+<div
+className="auth-container"
+style={{ backgroundImage: `url(${bg})` }}
+>
+
+
+  <div className="auth-card">
+
+    <h2>🏋 Fittr Login</h2>
+
+    <form onSubmit={handleSubmit}>
+
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <div style={{ position: "relative" }}>
 
         <input
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-
-        <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Password"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button onClick={handleLogin} disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
+        <span
+          onClick={() => setShowPassword(!showPassword)}
+          style={{
+            position: "absolute",
+            right: "10px",
+            top: "10px",
+            cursor: "pointer"
+          }}
+        >
+          👁
+        </span>
 
-        <div className="auth-link">
-          Don’t have an account? <Link to="/register">Register</Link>
-        </div>
       </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+      >
+        {loading ? "Logging in..." : "Login"}
+      </button>
+
+    </form>
+
+    <div className="auth-link">
+      Don’t have an account?
+      <Link to="/register"> Register</Link>
     </div>
-  );
+
+  </div>
+
+</div>
+
+
+);
 }
 
 export default Login;
-
-
-
-
-
-
-
-
-
 
 
 

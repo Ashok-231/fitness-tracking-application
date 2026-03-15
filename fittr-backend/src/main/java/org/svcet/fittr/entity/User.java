@@ -40,7 +40,7 @@ public class User {
     =============================== */
 
     @Column(nullable = false)
-    private String role = "USER";
+    private String role = "ROLE_USER";
 
     /* ===============================
        🧍 PERSONAL DETAILS
@@ -77,6 +77,7 @@ public class User {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -84,6 +85,7 @@ public class User {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -91,6 +93,7 @@ public class User {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -99,6 +102,7 @@ public class User {
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -106,13 +110,19 @@ public class User {
     public String getRole() {
         return role;
     }
+
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean isAdmin() {
+        return "ROLE_ADMIN".equals(role);
     }
 
     public String getGender() {
         return gender;
     }
+
     public void setGender(String gender) {
         this.gender = gender;
     }
@@ -120,6 +130,7 @@ public class User {
     public LocalDate getDob() {
         return dob;
     }
+
     public void setDob(LocalDate dob) {
         this.dob = dob;
     }
@@ -127,6 +138,7 @@ public class User {
     public String getGoal() {
         return goal;
     }
+
     public void setGoal(String goal) {
         this.goal = goal;
     }
@@ -134,6 +146,7 @@ public class User {
     public Double getHeight() {
         return height;
     }
+
     public void setHeight(Double height) {
         this.height = height;
     }
@@ -141,6 +154,7 @@ public class User {
     public Double getWeight() {
         return weight;
     }
+
     public void setWeight(Double weight) {
         this.weight = weight;
     }
@@ -148,6 +162,7 @@ public class User {
     public Double getBmi() {
         return bmi;
     }
+
     public void setBmi(Double bmi) {
         this.bmi = bmi;
     }
