@@ -6,11 +6,11 @@ function WorkoutVideos() {
 const videos = [
 {
 title: "Cycling Workout",
-url: "https://www.youtube.com/embed/1VY2Eo6rj2k"
+url: "https://www.youtube.com/embed/ZiGE3-L4vyg?si=TGjtyMiABaANZPQY"
 },
 {
 title: "Yoga Full Body",
-url: "https://www.youtube.com/embed/v7AYKMP6rOE"
+url: "https://www.youtube.com/embed/dAqQqmaI9vY?si=rAV60GfxEWnK0oiY"
 },
 {
 title: "Gym Beginner Workout",
@@ -26,7 +26,7 @@ url: "https://www.youtube.com/embed/pFN2n7CRqhw"
 },
 {
 title: "Jump Rope Workout",
-url: "https://www.youtube.com/embed/1BZM3Kp0B3k"
+url: "https://www.youtube.com/embed/DTdaiqR9now?si=dT-KXGafMvLxBjDv"
 },
 {
 title: "Push Ups Tutorial",
